@@ -1,5 +1,18 @@
 import * as React from 'react';
-// import AudioPlayer from '../util/AudioPlayer';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import * as Sounds from '../static/audio';
 
 
@@ -102,87 +115,127 @@ const BingoGame: React.FC = () => {
 		called[bingoNumber] = true;
 	}
 	console.log('called', called);
+    const renderTableRows = () => {
+        const rows: any = []
+        for (let i = 1; i <= size / bingo.length; i++) {
+            rows.push(
+                <TableRow key={i}>
+                    {bingo.split('').map((letter, index) => {
+                        const offset = index  * size / bingo.length;
+                        const number = i + offset;
+                        const bingoNumber = `${letter}${number}`;
+                        console.log('bingoNumber', bingoNumber);
+                        const isCalled = called[bingoNumber];
+                        const isLastCalled = lastCalled === bingoNumber;
+                        return (
+                            <TableCell
+                                key={number} 
+                                style={{ 
+                                    border: '1px solid black', 
+                                    backgroundColor: isCalled ? isLastCalled ? 'red' : 'green' : 'rgb(64,64,64)',
+                                    color: 'white',
+                                    height: 48,
+                                    fontSize: 32,
+                                    textAlign: 'center',
+                                    padding: 0
+                                }}>
+                                {isCalled ? number : ''}
+                            </TableCell>
+                        )
+                    })}
+                </TableRow>
+            )
+        }
+        return rows;
+    }
 
     return (
         <div 
             style={{
                 justifyContent: 'center', 
-                alignItems:'center'
+                alignItems:'center',
+                backgroundColor: 'black',
+                position:'absolute',
+                left: 0,
+                right: 0,
+                bottom: 0,
+                top: 0,
+                padding: 16
             }}>
-            <div style={{ display: 'flex', justifyContent: 'space-evenly', padding: 16 }}>
-                <button onClick={restartGame}>New Game</button>
-                <button onClick={pauseGame}>{pause ? 'Play' : 'Pause'}</button>
-                <button onClick={slowDown}>Slow Down</button>
-                <button onClick={speedUp}>Hurry Up</button>
-            </div>
+            <Stack direction="row" style={{ display: 'flex', flex: 1}}>
+                <Stack spacing={2} direction="row" style={{ display: 'flex', flex: 1, justifyContent: 'flex-start' }}>
+                    <Button variant="contained" color="error" onClick={restartGame}>
+                        <RestartAltIcon />
+                    </Button>
+                    <Button variant="contained" onClick={pauseGame}>
+                        {pause ? <PlayArrowIcon /> : <PauseIcon />}
+                    </Button>
+                </Stack>
+                <div
+                    style={{ 
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        color: 'white',
+                        padding: 8,
+                    }}>
+                    {countdown / 1000} second{countdown != 1000 ? 's' : ''}
+                </div>
+                <Stack spacing={2} direction="row" style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
+                    <Button variant="outlined" onClick={speedUp}>
+                        <RemoveIcon />
+                    </Button>
+                    <div style={{ color: 'white', alignItems: 'center', display: 'flex' }}>
+                        {time / 1000} second{time !== 1000 ? 's' : ''}
+                    </div>
+                    <Button variant="outlined" onClick={slowDown}>
+                        <AddIcon />
+                    </Button>
+                </Stack>
+            </Stack>
             <div
                 style={{ 
-                    padding: '16px 0px',
-                    textAlign: 'center',
-                }}>
-                {countdown / 1000} second{countdown != 1000 ? 's' : ''}
-            </div>
-            <div
-                style={{ 
-                    fontSize: '32pt',
-                    padding: '16px 0px',
-                    textAlign: 'center',
-                    backgroundColor: 'red',
-                    color: 'white'
-                }}>
-                {lastCalled}
-            </div>
-            <table
-                style={{ 
                     display: 'flex',
-                    flex: 1,
-                    justifyContent: 'space-evenly', 
-                    alignItems:'center',
-                    fontSize: '24pt',
-                    textAlign: 'center',
-                    backgroundColor: 'white'
+                    justifyContent: 'center',
+                    alignItems: 'center',
                 }}>
-                <tbody style={{
-                    display: 'flex',
-                    flex: 1,
-                    justifyContent: 'space-evenly', 
-                    alignItems:'center'}}>
-                {bingo.split('').map((letter, index) => {
-                    const boxes = []
-                    for (let i = 1; i <= size / bingo.length; i++) {
-                        const offset = index * size / bingo.length;
-                        const number = i + offset;
-                        const bingoNumber = `${letter}${number}`;
-                        const isCalled = called[bingoNumber];
-                        const isLastCalled = lastCalled === bingoNumber;
-                        boxes.push(
-                            <td
-                                key={number} 
-                                style={{ 
-                                    border: '1px solid black', 
-                                    padding: '8px',
-                                    minWidth: '40px',
-                                    minHeight: '40px',
-                                    backgroundColor: isCalled ? isLastCalled ? 'red' : 'green' : 'transparent',
-                                    color: 'white'
-                                }}>
-                                {isCalled ? number : ''}
-                            </td>
-                        )
-                    }
-                    return (
-                        <td>
-                            <th style={{ textAlign: 'left', minWidth: '40px', padding: '8px' }}>
-                                {letter}
-                            </th>
-                            <td style={{ display: 'flex', flexDirection: 'column'}}>
-                                {boxes}
-                            </td>
-                        </td>
-                    )
-                })}
-                </tbody>
-            </table>
+                    <div style={{ 
+                        padding: 8,
+                        margin: 8,
+                        fontSize: 48,
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        backgroundColor: 'red'
+                    }}>
+                        {lastCalled}
+                    </div>
+            </div>
+            <TableContainer component={Paper}>
+                <Table style={{justifyContent: 'space-evenly'}}>
+                    <TableHead>
+                        <TableRow>
+                            {bingo.split('').map((letter) => (
+                                <TableCell 
+                                    key={letter} 
+                                    style={{ 
+                                        minWidth: 40,
+                                        textAlign: 'center', 
+                                        fontWeight: 'bold',
+                                        fontSize: 32,
+                                        backgroundColor: 'rgb(232,232,232)'
+                                    }}>
+                                    {letter}
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {renderTableRows()}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </div>
     )
 }

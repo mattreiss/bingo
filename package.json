@@ -84,12 +84,18 @@
     "url-loader": "^4.1.1"
   },
   "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.2.5",
+    "@mui/material": "^5.2.5",
+    "@mui/styled-engine-sc": "^5.1.0",
     "body-parser": "^1.19.1",
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.17.2",
     "gtts": "^0.2.1",
     "pug": "^3.0.2",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "styled-components": "^5.3.3"
   }
 }
