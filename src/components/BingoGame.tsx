@@ -43,10 +43,10 @@ function shuffleArray(_array: string[]) {
 let timeout1: any, timeout2: any;
 
 const BingoGame: React.FC = () => {
-	const [game, setGame] = React.useState<string[]>(shuffleArray(bingoNumbers));
-	const [index, setIndex] = React.useState(0);
+    const [game, setGame] = React.useState<string[]>(shuffleArray(bingoNumbers));
+    const [index, setIndex] = React.useState(0);
     const [pause, setPause] = React.useState(false);
-	const [time, setTime] = React.useState(5000);
+    const [time, setTime] = React.useState(5000);
     const [countdown, setCountdown] = React.useState(time);
 
     const restartGame = () => {
@@ -79,42 +79,42 @@ const BingoGame: React.FC = () => {
         }
     }
 
-	const sayText = (text: string) => {
+    const sayText = (text: string) => {
         console.log('text', text);
         const audio = new Audio((Sounds as any)[text]);
         audio.play();
-	}
+    }
 
-	React.useEffect(() => {
-		if (!pause && index < game.length) {
+    React.useEffect(() => {
+        if (!pause && index < game.length) {
             sayText(game[index])
             setCountdown(time);
-			timeout1 = setTimeout(() => {
+            timeout1 = setTimeout(() => {
                 if (!pause) {
                     setIndex(index + 1);
                 }
-			}, time);
-		}
-	}, [index, pause]);
+            }, time);
+        }
+    }, [index, pause]);
 
     React.useEffect(() => {
-		if (!pause) {
-			timeout2 = setTimeout(() => {
+        if (!pause) {
+            timeout2 = setTimeout(() => {
                 if (pause) return;
                 if (countdown - 1000 > 0) {
                     setCountdown(countdown - 1000);
                 }
-			}, 1000);
-		}
+            }, 1000);
+        }
     }, [countdown])
 
     const lastCalled = game[index];
-	const called: { [key: string]: boolean } = {};
-	for (let i = 0; i <= index; i++) {
-		const bingoNumber = game[i];
-		called[bingoNumber] = true;
-	}
-	console.log('called', called);
+    const called: { [key: string]: boolean } = {};
+    for (let i = 0; i <= index; i++) {
+        const bingoNumber = game[i];
+        called[bingoNumber] = true;
+    }
+    console.log('called', called);
     const renderTableRows = () => {
         const rows: any = []
         for (let i = 1; i <= size / bingo.length; i++) {
