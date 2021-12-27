@@ -9,7 +9,10 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "lint": "eslint --ext .ts,.tsx .",
+    "generate-audio": "node ./src/scripts/generate_audio.js",
+    "index-audio": "./src/scripts/index_audio.sh",
+    "audio": "yarn generate-audio && yarn index-audio"
   },
   "keywords": [],
   "author": "mr",

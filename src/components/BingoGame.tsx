@@ -17,16 +17,18 @@ import * as Sounds from '../static/audio';
 
 
 const bingo = 'BINGO';
-const size = 80;
 
-const bingoNumbers: string[] = [];
-bingo.split('').forEach((letter, index) => {
-    for (let i = 1; i <= size / bingo.length; i++) {
-        const offset = index * size / bingo.length;
-        const number = i + offset;
-        bingoNumbers.push(`${letter}${number}`);
-    }
-});
+function generateBingoNumbers(size: number) {
+    const bingoNumbers: string[] = [];
+    bingo.split('').forEach((letter, index) => {
+        for (let i = 1; i <= size / bingo.length; i++) {
+            const offset = index * size / bingo.length;
+            const number = i + offset;
+            bingoNumbers.push(`${letter}${number}`);
+        }
+    });
+    return bingoNumbers;
+}
 
 function shuffleArray(_array: string[]) {
 	const array = [..._array];
@@ -43,6 +45,8 @@ function shuffleArray(_array: string[]) {
 let timeout1: any, timeout2: any;
 
 const BingoGame: React.FC = () => {
+    const [size] = React.useState(75);
+    const [bingoNumbers, setBingoNumbers] = React.useState(generateBingoNumbers(size))
     const [game, setGame] = React.useState<string[]>(shuffleArray(bingoNumbers));
     const [index, setIndex] = React.useState(0);
     const [pause, setPause] = React.useState(false);
@@ -50,12 +54,19 @@ const BingoGame: React.FC = () => {
     const [countdown, setCountdown] = React.useState(time);
 
     const restartGame = () => {
+        if (index < 1) {
+            return;
+        }
         clearTimeout(timeout1);
         clearTimeout(timeout2);
         setGame(shuffleArray(bingoNumbers));
         setIndex(0);
         setPause(false);
-        setCountdown(time);
+        if (time == countdown) {
+            setCountdown(time + 1000);
+        } else {
+            setCountdown(time);
+        }
     }
 
     const pauseGame = () => {
@@ -108,13 +119,42 @@ const BingoGame: React.FC = () => {
         }
     }, [countdown])
 
+    React.useEffect(() => {
+        if (size != bingoNumbers.length) {
+            setBingoNumbers(generateBingoNumbers(size));
+            restartGame()
+        }
+    }, [size]);
+
+    const onKeydown = (e: any) => {
+        switch (e.key) {
+            case 'ArrowDown':
+                speedUp();
+                break;
+            case 'ArrowUp':
+                slowDown();
+                break;
+            case ' ':
+                pauseGame();
+                break;
+            case 'Escape':
+                restartGame();
+        }
+    }
+
+    React.useEffect(() => {
+        document.addEventListener('keydown', onKeydown);
+        return () => {
+            document.removeEventListener('keydown', onKeydown)
+        }
+    }, [onKeydown]);
+
     const lastCalled = game[index];
     const called: { [key: string]: boolean } = {};
     for (let i = 0; i <= index; i++) {
         const bingoNumber = game[i];
         called[bingoNumber] = true;
     }
-    console.log('called', called);
     const renderTableRows = () => {
         const rows: any = []
         for (let i = 1; i <= size / bingo.length; i++) {
@@ -124,7 +164,6 @@ const BingoGame: React.FC = () => {
                         const offset = index  * size / bingo.length;
                         const number = i + offset;
                         const bingoNumber = `${letter}${number}`;
-                        console.log('bingoNumber', bingoNumber);
                         const isCalled = called[bingoNumber];
                         const isLastCalled = lastCalled === bingoNumber;
                         return (
