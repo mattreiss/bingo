@@ -176,7 +176,7 @@ const BingoGame: React.FC = () => {
                                     height: 48,
                                     fontSize: 32,
                                     textAlign: 'center',
-                                    padding: 0
+                                    padding: 0,
                                 }}>
                                 {isCalled ? number : ''}
                             </TableCell>
@@ -191,8 +191,11 @@ const BingoGame: React.FC = () => {
     return (
         <div 
             style={{
-                justifyContent: 'center', 
-                alignItems:'center',
+                display: 'flex',
+                flex: 1,
+                width: '100%',
+                flexDirection: 'column',
+                alignItems:'stretch',
                 backgroundColor: 'black',
                 position:'absolute',
                 left: 0,
@@ -201,7 +204,7 @@ const BingoGame: React.FC = () => {
                 top: 0,
                 padding: 16
             }}>
-            <Stack direction="row" style={{ display: 'flex', flex: 1, marginBottom: 16 }}>
+            <Stack direction="row" style={{ marginBottom: 16 }}>
                 <Stack spacing={2} direction="row" style={{ display: 'flex', flex: 1, justifyContent: 'flex-start' }}>
                     <Button variant="contained" color="error" onClick={restartGame}>
                         <RestartAltIcon />
@@ -237,7 +240,7 @@ const BingoGame: React.FC = () => {
                             <LinearProgress variant="determinate" value={100 - (100 * countdown / time)} />
                         </Box>
                 </div>
-                <Stack direction="row" style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
+                <Stack direction="row" style={{ display: 'flex', flex: 1, justifyContent: 'flex-end', marginRight: 16 }}>
                     <div style={{ color: 'white', alignItems: 'center', display: 'flex' }}>
                         {parseInt(`${time / 1000}`) + 1}s
                     </div>
@@ -251,9 +254,9 @@ const BingoGame: React.FC = () => {
                     </Stack>
                 </Stack>
             </Stack>
-            <div style={{ paddingBottom: 16 }}>
+            <div style={{ paddingBottom: 16, paddingRight: 32, display: 'flex', flex: 1 }}>
                 <TableContainer component={Paper}>
-                    <Table style={{justifyContent: 'space-evenly'}}>
+                    <Table style={{ height: '100%' }}>
                         <TableHead>
                             <TableRow>
                                 {bingo.split('').map((letter) => (
