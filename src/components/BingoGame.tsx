@@ -251,30 +251,32 @@ const BingoGame: React.FC = () => {
                     </Stack>
                 </Stack>
             </Stack>
-            <TableContainer component={Paper}>
-                <Table style={{justifyContent: 'space-evenly'}}>
-                    <TableHead>
-                        <TableRow>
-                            {bingo.split('').map((letter) => (
-                                <TableCell 
-                                    key={letter} 
-                                    style={{ 
-                                        minWidth: 40,
-                                        textAlign: 'center', 
-                                        fontWeight: 'bold',
-                                        fontSize: 32,
-                                        backgroundColor: 'rgb(232,232,232)'
-                                    }}>
-                                    {letter}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {renderTableRows()}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <div style={{ paddingBottom: 16 }}>
+                <TableContainer component={Paper}>
+                    <Table style={{justifyContent: 'space-evenly'}}>
+                        <TableHead>
+                            <TableRow>
+                                {bingo.split('').map((letter) => (
+                                    <TableCell 
+                                        key={letter} 
+                                        style={{ 
+                                            minWidth: 40,
+                                            textAlign: 'center', 
+                                            fontWeight: 'bold',
+                                            fontSize: 32,
+                                            backgroundColor: 'rgb(232,232,232)'
+                                        }}>
+                                        {letter}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {renderTableRows()}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </div>
         </div>
     )
 }
