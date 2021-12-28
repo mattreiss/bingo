@@ -11,9 +11,10 @@ import Button from '@mui/material/Button';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import * as Sounds from '../static/audio';
+import { Box, LinearProgress } from '@mui/material';
 
 
 const bingo = 'BINGO';
@@ -42,7 +43,7 @@ function shuffleArray(_array: string[]) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let timeout1: any, timeout2: any;
+let timeout: any;
 
 const BingoGame: React.FC = () => {
     const [size] = React.useState(75);
@@ -50,30 +51,31 @@ const BingoGame: React.FC = () => {
     const [game, setGame] = React.useState<string[]>(shuffleArray(bingoNumbers));
     const [index, setIndex] = React.useState(0);
     const [pause, setPause] = React.useState(false);
-    const [time, setTime] = React.useState(5000);
+    const [time, setTime] = React.useState(4000);
     const [countdown, setCountdown] = React.useState(time);
 
     const restartGame = () => {
         if (index < 1) {
             return;
         }
-        clearTimeout(timeout1);
-        clearTimeout(timeout2);
-        setGame(shuffleArray(bingoNumbers));
+        clearTimeout(timeout);
+        timeout = undefined;
+        const newGame = shuffleArray(bingoNumbers);
+        setGame(newGame);
         setIndex(0);
         setPause(false);
         if (time == countdown) {
-            setCountdown(time + 1000);
+            setCountdown(time + 100);
         } else {
             setCountdown(time);
         }
+        sayText(newGame[0]);
     }
 
     const pauseGame = () => {
         if (!pause) {
-            clearTimeout(timeout1);
-            clearTimeout(timeout2);
-            setCountdown(0);
+            clearTimeout(timeout);
+            setCountdown(time + 100);
         }
         setPause(!pause)
     }
@@ -97,27 +99,25 @@ const BingoGame: React.FC = () => {
     }
 
     React.useEffect(() => {
-        if (!pause && index < game.length) {
-            sayText(game[index])
-            setCountdown(time);
-            timeout1 = setTimeout(() => {
-                if (!pause) {
+        if (index >= game.length) {
+            setPause(true);
+        } else if (!pause) {
+            if (!timeout && index == 0 && countdown == time) {
+                sayText(game[index])
+            }
+            clearTimeout(timeout)
+            timeout = setTimeout(() => {
+                if (pause) return;
+                if (countdown >= -100) {
+                    setCountdown(countdown - 100);
+                } else {
+                    sayText(game[index + 1])
+                    setCountdown(time + 700);
                     setIndex(index + 1);
                 }
-            }, time);
+            }, 100);
         }
-    }, [index, pause]);
-
-    React.useEffect(() => {
-        if (!pause) {
-            timeout2 = setTimeout(() => {
-                if (pause) return;
-                if (countdown - 1000 > 0) {
-                    setCountdown(countdown - 1000);
-                }
-            }, 1000);
-        }
-    }, [countdown])
+    }, [countdown, index, pause, game])
 
     React.useEffect(() => {
         if (size != bingoNumbers.length) {
@@ -201,7 +201,7 @@ const BingoGame: React.FC = () => {
                 top: 0,
                 padding: 16
             }}>
-            <Stack direction="row" style={{ display: 'flex', flex: 1}}>
+            <Stack direction="row" style={{ display: 'flex', flex: 1, marginBottom: 16 }}>
                 <Stack spacing={2} direction="row" style={{ display: 'flex', flex: 1, justifyContent: 'flex-start' }}>
                     <Button variant="contained" color="error" onClick={restartGame}>
                         <RestartAltIcon />
@@ -213,44 +213,44 @@ const BingoGame: React.FC = () => {
                 <div
                     style={{ 
                         display: 'flex',
+                        flex: 1,
                         justifyContent: 'center',
                         alignItems: 'center',
                         textAlign: 'center',
                         color: 'white',
-                        padding: 8,
+                        flexDirection: 'column'
                     }}>
-                    {countdown / 1000} second{countdown != 1000 ? 's' : ''}
+                        <div style={{ 
+                            width: '100%',
+                            padding: 8,
+                            marginBottom: 8,
+                            fontSize: 32,
+                            textAlign: 'center',
+                            fontWeight: 'bold',
+                            color: 'white',
+                            backgroundColor: 'red',
+                            borderRadius: 16
+                        }}>
+                            {lastCalled}
+                        </div>
+                        <Box sx={{ width: '100%' }}>
+                            <LinearProgress variant="determinate" value={100 - (100 * countdown / time)} />
+                        </Box>
                 </div>
-                <Stack spacing={2} direction="row" style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
-                    <Button variant="outlined" onClick={speedUp}>
-                        <RemoveIcon />
-                    </Button>
+                <Stack direction="row" style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
                     <div style={{ color: 'white', alignItems: 'center', display: 'flex' }}>
-                        {time / 1000} second{time !== 1000 ? 's' : ''}
+                        {parseInt(`${time / 1000}`) + 1}s
                     </div>
-                    <Button variant="outlined" onClick={slowDown}>
-                        <AddIcon />
-                    </Button>
+                    <Stack direction="column">
+                        <Button onClick={slowDown}>
+                            <KeyboardArrowUpIcon />
+                        </Button>
+                        <Button onClick={speedUp}>
+                            <KeyboardArrowDownIcon />
+                        </Button>
+                    </Stack>
                 </Stack>
             </Stack>
-            <div
-                style={{ 
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-                    <div style={{ 
-                        padding: 8,
-                        margin: 8,
-                        fontSize: 48,
-                        textAlign: 'center',
-                        fontWeight: 'bold',
-                        color: 'white',
-                        backgroundColor: 'red'
-                    }}>
-                        {lastCalled}
-                    </div>
-            </div>
             <TableContainer component={Paper}>
                 <Table style={{justifyContent: 'space-evenly'}}>
                     <TableHead>
